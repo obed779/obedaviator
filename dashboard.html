@@ -159,3 +159,40 @@
   </script>
 </body>
 </html>
+// server.js
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import cors from "cors";
+
+const app = express();
+app.use(cors());
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: { origin: "*" },
+});
+
+let playerCount = 0;
+
+// Emit sample flight data periodically (simulate game)
+setInterval(() => {
+  const multiplier = (Math.random() * 10 + 1).toFixed(2);
+  io.emit("flight_update", { time: Date.now(), multiplier });
+}, 3000);
+
+io.on("connection", (socket) => {
+  playerCount++;
+  console.log(`👤 Player connected (${playerCount} total)`);
+
+  // Notify all dashboards
+  io.emit("player_count", { count: playerCount });
+
+  socket.on("disconnect", () => {
+    playerCount = Math.max(0, playerCount - 1);
+    console.log(`❌ Player disconnected (${playerCount} total)`);
+    io.emit("player_count", { count: playerCount });
+  });
+});
+
+server.listen(5000, () => console.log("🚀 Socket server running on port 5000"));
