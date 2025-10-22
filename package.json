@@ -1,22 +1,21 @@
 {
   "name": "aviator-game",
   "version": "1.0.0",
-  "description": "Aviator multiplayer crash game backend (Node.js + SQLite)",
+  "description": "Aviator game backend server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "echo \"No test specified\" && exit 0"
   },
+  "author": "obed",
+  "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "express": "^4.19.2",
+    "express": "^4.18.2",
     "socket.io": "^4.7.5",
-    "sqlite3": "^5.1.6",
+    "better-sqlite3": "^9.0.0",
     "cors": "^2.8.5"
   },
-"engines": {
-  "node": "20.x"
-}
-
-  },
-  "license": "MIT"
+  "engines": {
+    "node": "20.x"
+  }
 }
