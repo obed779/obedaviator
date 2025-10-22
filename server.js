@@ -62,6 +62,23 @@ io.on("connection", (socket) => {
     console.log("🔴 Player disconnected");
   });
 });
+// Serve static files from the "public" folder
+app.use(express.static(__dirname + '/public'));
+
+// Root route
+app.get("/", (req, res) => {
+  res.send("✅ Aviator Game API is live and running!");
+});
+
+// Dashboard route
+app.get("/dashboard", (req, res) => {
+  res.sendFile(__dirname + "/public/dashboard.html");
+});
+
+server.listen(PORT, () => {
+  console.log(`✅ Server listening on port ${PORT}`);
+  setTimeout(startRound, 2000);
+});
 
 // ✅ Start server
 const PORT = process.env.PORT || 10000;
