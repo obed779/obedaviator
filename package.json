@@ -13,8 +13,10 @@
     "sqlite3": "^5.1.6",
     "cors": "^2.8.5"
   },
-  "engines": {
-    "node": ">=18.x"
+"engines": {
+  "node": "20.x"
+}
+
   },
   "license": "MIT"
 }
