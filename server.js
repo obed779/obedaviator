@@ -98,6 +98,18 @@ io.on('connection', (socket) => {
 app.get("/", (req, res) => {
   res.send("✅ Aviator Game API is live and running!");
 });
+// Serve the dashboard HTML file
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
 
 // ✅ Start server and begin rounds
 server.listen(PORT, () => {
