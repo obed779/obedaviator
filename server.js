@@ -45,6 +45,9 @@ app.get('/api/history', (req, res) => {
   const rows = db.prepare('SELECT * FROM history ORDER BY created_at DESC LIMIT 50').all();
   res.json(rows);
 });
+app.get("/dashboard", (req, res) => {
+  res.sendFile(__dirname + "/public/dashboard.html");
+});
 
 // ✅ Save round results to DB
 function saveResult(roundId, result) {
