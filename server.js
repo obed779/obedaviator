@@ -15,8 +15,11 @@ const DB_PATH = process.env.DB_PATH || './data/aviator.db';
 const fs = require('fs');
 const dataDir = path.dirname(DB_PATH);
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-
+const Database = require('better-sqlite3');
+const DB_PATH = './aviator.db';
 const db = new Database(DB_PATH);
+
+
 // Create table if not exists
 db.prepare(`
   CREATE TABLE IF NOT EXISTS history (
