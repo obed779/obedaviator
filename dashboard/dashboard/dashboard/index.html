@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aviator Live Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: #f1f5f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      h1 {
+        margin: 20px 0;
+      }
+      #history {
+        width: 90%;
+        max-width: 600px;
+        border-collapse: collapse;
+      }
+      table {
+        width: 100%;
+        border: 1px solid #334155;
+        border-radius: 8px;
+      }
+      th, td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #334155;
+      }
+      tr:nth-child(even) {
+        background: #1e293b;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>✈️ Aviator Live Dashboard</h1>
+    <table id="history">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Round</th>
+          <th>Crash</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="history-body"></tbody>
+    </table>
+    <script type="module" src="/main.jsx"></script>
+  </body>
+</html>
