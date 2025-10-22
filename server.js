@@ -94,6 +94,10 @@ io.on('connection', (socket) => {
     socket.emit('bet:ack', { ok: true, id: data.id || null });
   });
 });
+// Serve a simple homepage
+app.get("/", (req, res) => {
+  res.send("✅ Aviator Game API is live and running!");
+});
 
 // ✅ Start server and begin rounds
 server.listen(PORT, () => {
