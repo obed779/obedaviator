@@ -97,7 +97,10 @@ io.on('connection', (socket) => {
   });
 });
 // Serve a simple homepage
-app.get("/", (req, res) => {
+app.get("/", (req, res) => {app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
+
   res.send("✅ Aviator Game API is live and running!");
 });
 // Serve the dashboard HTML file
