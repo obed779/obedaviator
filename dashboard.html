@@ -13,5 +13,101 @@
       font-family: "Poppins", sans-serif;
     }
     .sidebar {
+      background-color: #1e1e1e;
+      height: 100vh;
+      position: fixed;
+      width: 250px;
+      padding-top: 30px;
+    }
+    .sidebar a {
+      display: block;
+      color: #bbb;
+      padding: 12px 20px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+    .sidebar a:hover {
+      background-color: #292929;
+      color: #fff;
+    }
+    .main {
+      margin-left: 260px;
+      padding: 20px;
+    }
+    .card {
+      background-color: #1f1f1f;
+      border: none;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h3 class="text-center text-light">🎮 Aviator Admin</h3>
+    <a href="#">Dashboard</a>
+    <a href="#">Players</a>
+    <a href="#">Games</a>
+    <a href="#">Transactions</a>
+    <a href="#">Settings</a>
+  </div>
 
+  <div class="main">
+    <h2 class="mb-4">Dashboard Overview</h2>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="card p-3 text-center">
+          <h5>Total Players</h5>
+          <h2 id="playersCount">1,245</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-3 text-center">
+          <h5>Active Games</h5>
+          <h2 id="activeGames">27</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-3 text-center">
+          <h5>Total Bets</h5>
+          <h2 id="totalBets">$45,320</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-3 text-center">
+          <h5>Total Payouts</h5>
+          <h2 id="totalPayouts">$39,210</h2>
+        </div>
+      </div>
+    </div>
 
+    <div class="card mt-4 p-4">
+      <h5>Recent Game Activity</h5>
+      <canvas id="gameChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('gameChart');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Round 1', 'Round 2', 'Round 3', 'Round 4', 'Round 5'],
+        datasets: [{
+          label: 'Flight Multiplier (x)',
+          data: [1.5, 2.1, 8.7, 3.3, 5.9],
+          borderColor: '#00c6ff',
+          tension: 0.4,
+          fill: false
+        }]
+      },
+      options: {
+        plugins: { legend: { labels: { color: '#fff' } } },
+        scales: {
+          x: { ticks: { color: '#fff' } },
+          y: { ticks: { color: '#fff' } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
