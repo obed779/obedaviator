@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aviator Game Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b132b;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #5bc0be;
+      margin-bottom: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 90%;
+      max-width: 700px;
+      background-color: #1c2541;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #3a506b;
+      color: #ffffff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #1f4068;
+    }
+
+    tr:hover {
+      background-color: #162447;
+    }
+
+    .refresh-btn {
+      background-color: #5bc0be;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      margin-top: 20px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .refresh-btn:hover {
+      background-color: #4da8a0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Aviator Game Crash History</h1>
+
+  <table id="historyTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Round ID</th>
+        <th>Result (x)</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <button class="refresh-btn" onclick="fetchHistory()">Refresh Data</button>
+
+  <script>
+    async function fetchHistory() {
+      const res = await fetch("/history");
+      const data = await res.json();
+      const tbody = document.querySelector("#historyTable tbody");
+      tbody.innerHTML = "";
+      data.slice(-20).reverse().forEach(item => {
+        const row = `
+          <tr>
+            <td>${item.id}</td>
+            <td>${item.round_id}</td>
+            <td>${item.result}</td>
+            <td>${item.created_at}</td>
+          </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    fetchHistory();
+    setInterval(fetchHistory, 10000); // auto-refresh every 10 seconds
+  </script>
+</body>
+</html>
