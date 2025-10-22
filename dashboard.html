@@ -99,7 +99,55 @@
           tension: 0.4,
           fill: false
         }]
-      },
+      },<script>
+  const API_BASE = "https://your-api-domain.com"; // 🔁 replace with your real API URL
+
+  async function loadDashboard() {
+    try {
+      // Fetch dashboard stats
+      const resStats = await fetch(`${API_BASE}/api/dashboard/stats`);
+      const stats = await resStats.json();
+
+      document.getElementById("playersCount").textContent = stats.players.toLocaleString();
+      document.getElementById("activeGames").textContent = stats.activeGames;
+      document.getElementById("totalBets").textContent = `$${stats.totalBets.toLocaleString()}`;
+      document.getElementById("totalPayouts").textContent = `$${stats.totalPayouts.toLocaleString()}`;
+
+      // Fetch recent game data
+      const resGames = await fetch(`${API_BASE}/api/games/recent`);
+      const games = await resGames.json();
+
+      // Prepare chart
+      const ctx = document.getElementById('gameChart');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: games.map(g => `Round ${g.round}`),
+          datasets: [{
+            label: 'Flight Multiplier (x)',
+            data: games.map(g => g.multiplier),
+            borderColor: '#00c6ff',
+            tension: 0.4,
+            fill: false
+          }]
+        },
+        options: {
+          plugins: { legend: { labels: { color: '#fff' } } },
+          scales: {
+            x: { ticks: { color: '#fff' } },
+            y: { ticks: { color: '#fff' } }
+          }
+        }
+      });
+
+    } catch (err) {
+      console.error("Error loading dashboard:", err);
+    }
+  }
+
+  loadDashboard();
+</script>
+
       options: {
         plugins: { legend: { labels: { color: '#fff' } } },
         scales: {
