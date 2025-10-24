@@ -3,196 +3,232 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aviator Gaming Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>✈️ FlyWithObed Aviator Live</title>
   <style>
     body {
-      background-color: #121212;
+      background: radial-gradient(circle at center, #0f2027, #203a43, #2c5364);
       color: #fff;
       font-family: "Poppins", sans-serif;
+      margin: 0;
+      text-align: center;
+      overflow-x: hidden;
     }
-    .sidebar {
-      background-color: #1e1e1e;
-      height: 100vh;
-      position: fixed;
-      width: 250px;
-      padding-top: 30px;
+    header {
+      background: rgba(0, 255, 213, 0.1);
+      backdrop-filter: blur(8px);
+      padding: 1rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #00ffd5;
+      letter-spacing: 1px;
     }
-    .sidebar a {
-      display: block;
-      color: #bbb;
-      padding: 12px 20px;
-      text-decoration: none;
-      transition: 0.3s;
+    #status {
+      margin-top: 1rem;
+      font-size: 1.2rem;
     }
-    .sidebar a:hover {
-      background-color: #292929;
-      color: #fff;
+    #game {
+      margin: 2rem auto;
+      width: 90%;
+      height: 300px;
+      border: 2px solid #00ffd5;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
     }
-    .main {
-      margin-left: 260px;
-      padding: 20px;
+    #plane {
+      width: 90px;
+      position: absolute;
+      bottom: 30px;
+      left: 10%;
+      transition: transform 0.2s ease-in;
     }
-    .card {
-      background-color: #1f1f1f;
+    #multiplier {
+      font-size: 2rem;
+      margin-top: 1rem;
+      color: #00ffd5;
+      font-weight: bold;
+    }
+    .bets {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .bet-box {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid #00ffd5;
+      padding: 1rem;
+      border-radius: 12px;
+      width: 45%;
+      min-width: 250px;
+    }
+    .bet-box h3 {
+      color: #00ffd5;
+    }
+    input[type="number"] {
+      width: 60%;
+      padding: 8px;
       border: none;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 1rem;
+    }
+    button {
+      background: #00ffd5;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #00e6c0;
+    }
+    #balance {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: #ffcc00;
+    }
+    table {
+      margin: 2rem auto;
+      width: 90%;
+      border-collapse: collapse;
       color: #fff;
+    }
+    th, td {
+      border: 1px solid #00ffd5;
+      padding: 8px;
+    }
+    th {
+      background: #00ffd5;
+      color: #000;
     }
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h3 class="text-center text-light">🎮 Aviator Admin</h3>
-    <a href="#">Dashboard</a>
-    <a href="#">Players</a>
-    <a href="#">Games</a>
-    <a href="#">Transactions</a>
-    <a href="#">Settings</a>
+  <header>✈️ FlyWithObed Live Aviator Dashboard</header>
+
+  <div id="status">Connecting to Aviator Live...</div>
+  <div id="balance">💰 Balance: <span id="balanceValue">1000.00</span> KES</div>
+
+  <div id="game">
+    <img id="plane" src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Airplane_silhouette.png" alt="Plane">
   </div>
+  <div id="multiplier">1.00x</div>
 
-  <div class="main">
-    <h2 class="mb-4">Dashboard Overview</h2>
-    <div class="row g-3">
-      <div class="col-md-3">
-        <div class="card p-3 text-center">
-          <h5>Total Players</h5>
-          <h2 id="playersCount">1,245</h2>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card p-3 text-center">
-          <h5>Active Games</h5>
-          <h2 id="activeGames">27</h2>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card p-3 text-center">
-          <h5>Total Bets</h5>
-          <h2 id="totalBets">$45,320</h2>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card p-3 text-center">
-          <h5>Total Payouts</h5>
-          <h2 id="totalPayouts">$39,210</h2>
-        </div>
-      </div>
+  <div class="bets">
+    <div class="bet-box">
+      <h3>Bet A</h3>
+      <input type="number" id="betA" placeholder="Amount" />
+      <button id="placeA">Place Bet</button>
+      <button id="cashoutA" disabled>Cashout</button>
     </div>
-
-    <div class="card mt-4 p-4">
-      <h5>Recent Game Activity</h5>
-      <canvas id="gameChart" height="100"></canvas>
+    <div class="bet-box">
+      <h3>Bet B</h3>
+      <input type="number" id="betB" placeholder="Amount" />
+      <button id="placeB">Place Bet</button>
+      <button id="cashoutB" disabled>Cashout</button>
     </div>
   </div>
 
+  <table id="history">
+    <thead>
+      <tr><th>Round</th><th>Crash Point</th></tr>
+    </thead>
+    <tbody id="historyBody"></tbody>
+  </table>
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
-    const ctx = document.getElementById('gameChart');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Round 1', 'Round 2', 'Round 3', 'Round 4', 'Round 5'],
-        datasets: [{
-          label: 'Flight Multiplier (x)',
-          data: [1.5, 2.1, 8.7, 3.3, 5.9],
-          borderColor: '#00c6ff',
-          tension: 0.4,
-          fill: false
-        }]
-      },<script>
-  const API_BASE = "https://your-api-domain.com"; // 🔁 replace with your real API URL
-
-  async function loadDashboard() {
-    try {
-      // Fetch dashboard stats
-      const resStats = await fetch(`${API_BASE}/api/dashboard/stats`);
-      const stats = await resStats.json();
-
-      document.getElementById("playersCount").textContent = stats.players.toLocaleString();
-      document.getElementById("activeGames").textContent = stats.activeGames;
-      document.getElementById("totalBets").textContent = `$${stats.totalBets.toLocaleString()}`;
-      document.getElementById("totalPayouts").textContent = `$${stats.totalPayouts.toLocaleString()}`;
-
-      // Fetch recent game data
-      const resGames = await fetch(`${API_BASE}/api/games/recent`);
-      const games = await resGames.json();
-
-      // Prepare chart
-      const ctx = document.getElementById('gameChart');
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: games.map(g => `Round ${g.round}`),
-          datasets: [{
-            label: 'Flight Multiplier (x)',
-            data: games.map(g => g.multiplier),
-            borderColor: '#00c6ff',
-            tension: 0.4,
-            fill: false
-          }]
-        },
-        options: {
-          plugins: { legend: { labels: { color: '#fff' } } },
-          scales: {
-            x: { ticks: { color: '#fff' } },
-            y: { ticks: { color: '#fff' } }
-          }
-        }
-      });
-
-    } catch (err) {
-      console.error("Error loading dashboard:", err);
-    }
-  }
-
-  loadDashboard();
-</script>
-
-      options: {
-        plugins: { legend: { labels: { color: '#fff' } } },
-        scales: {
-          x: { ticks: { color: '#fff' } },
-          y: { ticks: { color: '#fff' } }
-        }
-      }
+    const socket = io("https://obedaviator.onrender.com", {
+      transports: ["websocket"],
+      secure: true
     });
+
+    const statusEl = document.getElementById("status");
+    const plane = document.getElementById("plane");
+    const multiplierEl = document.getElementById("multiplier");
+    const balanceEl = document.getElementById("balanceValue");
+    const historyBody = document.getElementById("historyBody");
+
+    let balance = 1000;
+    let multiplier = 1.00;
+    let active = false;
+    let currentRound = 0;
+    let flyInterval;
+
+    socket.on("connect", () => {
+      statusEl.textContent = "✅ Connected to Aviator Live";
+    });
+
+    socket.on("flight_update", (data) => {
+      startFlight(data.crashPoint);
+    });
+
+    function startFlight(crashPoint) {
+      if (active) return;
+      active = true;
+      multiplier = 1.00;
+      plane.style.left = "10%";
+      let x = 10;
+      statusEl.textContent = "🛫 Plane taking off...";
+      flyInterval = setInterval(() => {
+        multiplier += 0.05;
+        x += 1.5;
+        plane.style.left = x + "%";
+        multiplierEl.textContent = multiplier.toFixed(2) + "x";
+        if (multiplier >= crashPoint) {
+          clearInterval(flyInterval);
+          crash(crashPoint);
+        }
+      }, 200);
+    }
+
+    function crash(crashPoint) {
+      statusEl.textContent = `💥 Crashed at ${crashPoint}x`;
+      active = false;
+      const row = document.createElement("tr");
+      currentRound++;
+      row.innerHTML = `<td>${currentRound}</td><td>${crashPoint}x</td>`;
+      historyBody.prepend(row);
+      resetBets();
+    }
+
+    function placeBet(id) {
+      const input = document.getElementById(id);
+      const amount = parseFloat(input.value);
+      if (!amount || amount <= 0 || amount > balance) return alert("Invalid bet");
+      balance -= amount;
+      balanceEl.textContent = balance.toFixed(2);
+      document.getElementById("place" + id.slice(-1).toUpperCase()).disabled = true;
+      document.getElementById("cashout" + id.slice(-1).toUpperCase()).disabled = false;
+    }
+
+    function cashout(id) {
+      const current = multiplier;
+      const gain = parseFloat(document.getElementById(id).value) * current;
+      balance += gain;
+      balanceEl.textContent = balance.toFixed(2);
+      document.getElementById("cashout" + id.slice(-1).toUpperCase()).disabled = true;
+      statusEl.textContent = `💸 Cashout successful at ${current.toFixed(2)}x`;
+    }
+
+    function resetBets() {
+      ["A", "B"].forEach(l => {
+        document.getElementById("place" + l).disabled = false;
+        document.getElementById("cashout" + l).disabled = true;
+        document.getElementById("bet" + l).value = "";
+      });
+    }
+
+    document.getElementById("placeA").onclick = () => placeBet("betA");
+    document.getElementById("placeB").onclick = () => placeBet("betB");
+    document.getElementById("cashoutA").onclick = () => cashout("betA");
+    document.getElementById("cashoutB").onclick = () => cashout("betB");
   </script>
 </body>
 </html>
-// server.js
-import express from "express";
-import http from "http";
-import { Server } from "socket.io";
-import cors from "cors";
-
-const app = express();
-app.use(cors());
-const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: { origin: "*" },
-});
-
-let playerCount = 0;
-
-// Emit sample flight data periodically (simulate game)
-setInterval(() => {
-  const multiplier = (Math.random() * 10 + 1).toFixed(2);
-  io.emit("flight_update", { time: Date.now(), multiplier });
-}, 3000);
-
-io.on("connection", (socket) => {
-  playerCount++;
-  console.log(`👤 Player connected (${playerCount} total)`);
-
-  // Notify all dashboards
-  io.emit("player_count", { count: playerCount });
-
-  socket.on("disconnect", () => {
-    playerCount = Math.max(0, playerCount - 1);
-    console.log(`❌ Player disconnected (${playerCount} total)`);
-    io.emit("player_count", { count: playerCount });
-  });
-});
-
-server.listen(5000, () => console.log("🚀 Socket server running on port 5000"));
