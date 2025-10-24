@@ -1,5 +1,4 @@
 
-// server.js
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -16,6 +15,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*",
+    methods: ["GET", "POST"],
   },
 });
 
@@ -38,8 +38,8 @@ app.get("/dashboard", (req, res) => {
 // =============================
 // 🛠️ Simple game simulation logic
 // =============================
-
 let round = 0;
+
 function startRound() {
   round++;
   const result = (Math.random() * 10).toFixed(2);
@@ -51,7 +51,7 @@ function startRound() {
   io.emit("new_round", data);
   console.log(`🎯 Round ${round}: Crash point ${result}x`);
 
-  // New round every 8 seconds
+  // Start next round every 8 seconds
   setTimeout(startRound, 8000);
 }
 
@@ -62,41 +62,16 @@ io.on("connection", (socket) => {
   // Send initial status
   socket.emit("aviator_status", { status: "waiting" });
 
-  // Broadcast flight rounds every 8 seconds
+  // Broadcast flight updates every 8 seconds
   setInterval(() => {
-    const crashPoint = (Math.random() * 5 + 1).toFixed(2); // random 1.00x - 6.00x
+    const crashPoint = (Math.random() * 5 + 1).toFixed(2);
     console.log(`✈️ New flight emitted at ${crashPoint}x`);
-    
-    // Send update to all connected clients
     io.emit("flight_update", { crashPoint });
   }, 8000);
 
   socket.on("disconnect", () => {
     console.log("❌ Client disconnected");
   });
-});
-
-  console.log("🟢 New player connected");
-  socket.on("disconnect", () => {
-    console.log("🔴 Player disconnected");
-  });
-});
-// Serve static files from the "public" folder
-app.use(express.static(__dirname + '/public'));
-
-// Root route
-app.get("/", (req, res) => {
-  res.send("✅ Aviator Game API is live and running!");
-});
-
-// Dashboard route
-app.get("/dashboard", (req, res) => {
-  res.sendFile(__dirname + "/public/dashboard.html");
-});
-
-server.listen(PORT, () => {
-  console.log(`✅ Server listening on port ${PORT}`);
-  setTimeout(startRound, 2000);
 });
 
 // ✅ Start server
