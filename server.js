@@ -6,7 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 
-// Setup for ES modules (__dirname)
+// Fix for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,22 +19,23 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// ✅ Serve static files
+// ✅ Serve static files (HTML, CSS, JS) from /public
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Homepage route
+// ✅ Root endpoint for testing
 app.get("/", (req, res) => {
   res.send("✅ FlyWithObed Aviator API is live and running!");
 });
 
-// ✅ Serve dashboard
+// ✅ Serve dashboard.html at /dashboard
 app.get("/dashboard", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
 
 // ==============================
-// ✈️ Live Aviator Simulation
+// ✈️ Aviator Game Simulation
 // ==============================
+
 let round = 0;
 let isFlying = false;
 let balances = {
@@ -46,40 +47,46 @@ function startRound() {
   if (isFlying) return;
   isFlying = true;
   round++;
-  let multiplier = 1.00;
-  const targetCrash = (Math.random() * 6 + 1).toFixed(2);
 
-  console.log(`✈️ Round ${round} started | Crash target: ${targetCrash}x`);
+  let multiplier = 1.0;
+  const crashPoint = (Math.random() * 6 + 1).toFixed(2);
 
-  const flight = setInterval(() => {
-    multiplier += 0.1;
+  console.log(`✈️ Round ${round} started | crash at ${crashPoint}x`);
+
+  const flightInterval = setInterval(() => {
+    multiplier += 0.05;
     io.emit("flight_update", { round, multiplier: multiplier.toFixed(2) });
 
-    if (multiplier >= targetCrash) {
-      clearInterval(flight);
-      io.emit("crash", { round, crashPoint: targetCrash });
-      console.log(`💥 Round ${round} crashed at ${targetCrash}x`);
+    if (multiplier >= crashPoint) {
+      clearInterval(flightInterval);
+      io.emit("crash", { round, crashPoint });
+      console.log(`💥 Round ${round} crashed at ${crashPoint}x`);
+
       isFlying = false;
-      setTimeout(startRound, 5000);
+      setTimeout(startRound, 5000); // start next round in 5 seconds
     }
-  }, 200);
+  }, 150);
 }
 
-// ✅ WebSocket connections
+// ✅ Handle WebSocket connections
 io.on("connection", (socket) => {
-  console.log("✅ New dashboard connected");
+  console.log("✅ Dashboard connected");
+
+  // Send current balances
   socket.emit("aviator_status", { status: "connected", balances });
 
+  // Handle bet placement
   socket.on("place_bet", ({ player, amount }) => {
     if (balances[player] >= amount) {
       balances[player] -= amount;
       io.emit("balance_update", balances);
       console.log(`🎲 ${player} placed bet of ${amount}`);
     } else {
-      socket.emit("bet_failed", { message: "Insufficient balance" });
+      socket.emit("bet_failed", { message: "❌ Insufficient balance" });
     }
   });
 
+  // Handle cashout
   socket.on("cashout", ({ player, multiplier }) => {
     const winAmount = Math.round(100 * multiplier);
     balances[player] += winAmount;
@@ -87,7 +94,9 @@ io.on("connection", (socket) => {
     console.log(`💰 ${player} cashed out ${winAmount} at ${multiplier}x`);
   });
 
-  socket.on("disconnect", () => console.log("❌ Dashboard disconnected"));
+  socket.on("disconnect", () => {
+    console.log("❌ Dashboard disconnected");
+  });
 });
 
 // ✅ Start server
