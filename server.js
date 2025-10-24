@@ -57,6 +57,25 @@ function startRound() {
 
 // ✅ WebSocket events
 io.on("connection", (socket) => {
+  console.log("✅ Client connected to Aviator Live");
+
+  // Send initial status
+  socket.emit("aviator_status", { status: "waiting" });
+
+  // Broadcast flight rounds every 8 seconds
+  setInterval(() => {
+    const crashPoint = (Math.random() * 5 + 1).toFixed(2); // random 1.00x - 6.00x
+    console.log(`✈️ New flight emitted at ${crashPoint}x`);
+    
+    // Send update to all connected clients
+    io.emit("flight_update", { crashPoint });
+  }, 8000);
+
+  socket.on("disconnect", () => {
+    console.log("❌ Client disconnected");
+  });
+});
+
   console.log("🟢 New player connected");
   socket.on("disconnect", () => {
     console.log("🔴 Player disconnected");
