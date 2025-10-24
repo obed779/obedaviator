@@ -13,10 +13,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
+  cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
 app.use(cors());
@@ -25,58 +22,94 @@ app.use(express.json());
 // ✅ Serve static files from /public
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Simple homepage message
+// ✅ Homepage
 app.get("/", (req, res) => {
-  res.send("✅ Aviator Game API is live and running!");
+  res.send("✅ FlyWithObed Aviator API is running!");
 });
 
-// ✅ Serve dashboard.html when visiting /dashboard
+// ✅ Dashboard route
 app.get("/dashboard", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
 
 // =============================
-// 🛠️ Simple game simulation logic
+// 🛠️ Game Simulation (Real-Time)
 // =============================
+
 let round = 0;
+let activeFlights = false;
+let balances = {
+  playerA: 5000, // starting balance
+  playerB: 5000,
+};
 
 function startRound() {
+  if (activeFlights) return;
+  activeFlights = true;
   round++;
-  const result = (Math.random() * 10).toFixed(2);
-  const data = {
-    round_id: "round_" + round,
-    result: parseFloat(result),
-    created_at: new Date().toISOString(),
-  };
-  io.emit("new_round", data);
-  console.log(`🎯 Round ${round}: Crash point ${result}x`);
 
-  // Start next round every 8 seconds
-  setTimeout(startRound, 8000);
+  let multiplier = 1.0;
+  const targetCrash = (Math.random() * 5 + 1).toFixed(2);
+
+  console.log(`✈️ Round ${round} started — target crash ${targetCrash}x`);
+
+  const flight = setInterval(() => {
+    multiplier += 0.1;
+    io.emit("flight_update", {
+      round,
+      multiplier: multiplier.toFixed(2),
+    });
+
+    if (multiplier >= targetCrash) {
+      clearInterval(flight);
+      activeFlights = false;
+      console.log(`💥 Round ${round} crashed at ${targetCrash}x`);
+      io.emit("crash", {
+        round,
+        crashPoint: targetCrash,
+      });
+
+      // Start next round after 5 seconds
+      setTimeout(startRound, 5000);
+    }
+  }, 200);
 }
 
-// ✅ WebSocket events
+// ✅ Handle bets & cashouts
 io.on("connection", (socket) => {
-  console.log("✅ Client connected to Aviator Live");
+  console.log("✅ Client connected");
 
-  // Send initial status
-  socket.emit("aviator_status", { status: "waiting" });
+  socket.emit("aviator_status", { status: "connected", balances });
 
-  // Broadcast flight updates every 8 seconds
-  setInterval(() => {
-    const crashPoint = (Math.random() * 5 + 1).toFixed(2);
-    console.log(`✈️ New flight emitted at ${crashPoint}x`);
-    io.emit("flight_update", { crashPoint });
-  }, 8000);
+  socket.on("place_bet", (data) => {
+    const { player, amount } = data;
+    if (balances[player] >= amount) {
+      balances[player] -= amount;
+      io.emit("balance_update", balances);
+      socket.emit("bet_placed", { player, amount });
+      console.log(`🎲 ${player} placed bet of ${amount}`);
+    } else {
+      socket.emit("bet_failed", { reason: "Insufficient balance" });
+    }
+  });
+
+  socket.on("cashout", (data) => {
+    const { player, multiplier } = data;
+    const winAmount = Math.round(data.amount * multiplier);
+    balances[player] += winAmount;
+    io.emit("balance_update", balances);
+    console.log(`💰 ${player} cashed out ${winAmount} at ${multiplier}x`);
+  });
 
   socket.on("disconnect", () => {
     console.log("❌ Client disconnected");
   });
 });
 
-// ✅ Start server
+// ✅ Start the game server
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
-  console.log(`✅ Server listening on port ${PORT}`);
+  console.log(`✅ Server live on port ${PORT}`);
   setTimeout(startRound, 2000);
 });
+
