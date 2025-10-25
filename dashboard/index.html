@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>✈️ FlyWithObed Live Aviator Dashboard</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b0f1a;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #00d8ff;
+    }
+    #multiplier {
+      font-size: 3em;
+      margin: 10px 0;
+    }
+    .player {
+      background: #111827;
+      padding: 15px;
+      border-radius: 12px;
+      width: 260px;
+      margin: 10px auto;
+      box-shadow: 0 0 10px #00d8ff50;
+    }
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>✈️ FlyWithObed Live Aviator Dashboard</h1>
+  <h2>Multiplier: <span id="multiplier">1.00x</span></h2>
+  <h3>Round: <span id="round">—</span></h3>
+  <p>Status: <span id="status">connecting...</span></p>
+
+  <div class="player">
+    <h3>👨‍✈️ Player A</h3>
+    <p>Balance: $1000</p>
+    <input type="number" placeholder="Enter bet" />
+    <button>Bet</button>
+    <button>Cashout</button>
+  </div>
+
+  <div class="player">
+    <h3>🧑‍✈️ Player B</h3>
+    <p>Balance: $1000</p>
+    <input type="number" placeholder="Enter bet" />
+    <button>Bet</button>
+    <button>Cashout</button>
+  </div>
+
+  <h3>📈 History</h3>
+  <table>
+    <thead>
+      <tr><th>Round</th><th>Crash Point</th></tr>
+    </thead>
+    <tbody id="history"></tbody>
+  </table>
+
+  <script>
+    const socket = io();
+
+    const multiplierEl = document.getElementById("multiplier");
+    const roundEl = document.getElementById("round");
+    const statusEl = document.getElementById("status");
+    const historyEl = document.getElementById("history");
+
+    socket.on("connect", () => {
+      statusEl.textContent = "🟢 connected";
+    });
+
+    socket.on("round_start", (data) => {
+      roundEl.textContent = data.round;
+      multiplierEl.textContent = "1.00x";
+      statusEl.textContent = "🟠 in progress";
+    });
+
+    socket.on("multiplier_update", (data) => {
+      multiplierEl.textContent = data.multiplier + "x";
+    });
+
+    socket.on("round_crash", (data) => {
+      statusEl.textContent = "💥 crashed at " + data.crashPoint + "x";
+      const row = document.createElement("tr");
+      row.innerHTML = `<td>${data.round}</td><td>${data.crashPoint}x</td>`;
+      historyEl.prepend(row);
+    });
+
+    socket.on("disconnect", () => {
+      statusEl.textContent = "🔴 disconnected";
+    });
+  </script>
+</body>
+</html>
